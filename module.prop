@@ -1,7 +1,1 @@
-id=PhoenixBoot
-name=PhoenixBoot
-version=v1.0
-versionCode=1
-author=Lysine000
-description=Universal bootloop protection for Android. Backs up your boot partition and auto-restores if bootloop is detected. Supports Magisk, KernelSU and APatch. No configuration needed.
-updateJson=https://raw.githubusercontent.com/Lysine000/PhoenixBoot/main/update.json
+version=1.2\nversionCode=2
