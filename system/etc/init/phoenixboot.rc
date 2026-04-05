@@ -1,0 +1,13 @@
+# PhoenixBoot v1.2 — Early Boot Panic Counter Service
+# Increments the /misc panic counter before /data mounts.
+# Runs class core / early-init / oneshot. Degrades safely if context unavailable.
+
+on early-init
+    start phoenixboot_abort_counter
+
+service phoenixboot_abort_counter /system/bin/phoenixboot/boot_abort_handler.sh
+    class core
+    user root
+    group root
+    oneshot
+    disabled

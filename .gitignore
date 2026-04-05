@@ -1,0 +1,11 @@
+# Build artifacts
+*.zip
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db

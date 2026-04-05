@@ -1,0 +1,19 @@
+# PhoenixBoot v1.2 — sepolicy.rule
+# Grants magisk/su domains the minimum permissions needed to read/write
+# the /misc block device (for the panic counter) and execute shell scripts.
+
+# Block device access (misc counter r/w)
+allow magisk block_device blk_file { open read write getattr };
+allow su block_device blk_file { open read write getattr };
+
+# Script execution from /system/bin/phoenixboot/
+allow magisk system_file file { open read execute execute_no_trans getattr };
+allow su system_file file { open read execute execute_no_trans getattr };
+
+# Shell interpreter execution
+allow magisk shell_exec file { open read execute execute_no_trans getattr };
+allow su shell_exec file { open read execute execute_no_trans getattr };
+
+# kmsg logging during early-init
+allow magisk kmsg_device chr_file { open write };
+allow su kmsg_device chr_file { open write };

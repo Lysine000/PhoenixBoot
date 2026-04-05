@@ -1,0 +1,7 @@
+id=PhoenixBoot
+name=PhoenixBoot
+version=v1.3
+versionCode=13
+author=PhoenixBoot Project
+description=Zero-compromise bootloop protection. Safe on locked/AVB devices. Survives factory reset. Persistent panic counter via /misc. Never bricks. Never deletes your backup.
+minMagisk=26000

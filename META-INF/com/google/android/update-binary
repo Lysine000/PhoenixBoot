@@ -1,0 +1,14 @@
+#!/sbin/sh
+# =============================================================================
+# PhoenixBoot v1.2 — update-binary bootstrap
+# =============================================================================
+# SKIPUNZIP is intentionally NOT set here. The root manager's install_module
+# must perform native extraction so that the system/ overlay (phoenixboot.rc,
+# boot_abort_handler.sh) and sepolicy.rule land in $MODPATH automatically.
+# customize.sh handles all post-extraction logic and chmod passes.
+# =============================================================================
+. /data/adb/magisk/util_functions.sh 2>/dev/null || \
+  . /data/adb/ksud/util_functions.sh 2>/dev/null || \
+  . /data/adb/apatch/util_functions.sh 2>/dev/null || { echo "ERROR: No root manager util_functions found"; exit 1; }
+install_module
+exit 0
