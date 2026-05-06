@@ -5,7 +5,7 @@ CONFIG="$PHOENIXBOOT_DIR/config"
 
 _log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
 
-_log "=== PhoenixBoot v1.2 Uninstall ==="
+_log "=== PhoenixBoot v1.4 Uninstall ==="
 
 if [ ! -f "$CONFIG" ]; then
     _log "Config not found. Cannot locate boot partition or backups."

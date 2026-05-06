@@ -209,10 +209,10 @@ if $BOOTLOOP_DETECTED; then
 fi
 
 # ── Step 8: Normal boot — background stability timer ─────────────────────────
-_log "Normal boot confirmed. Starting ${STABILITY_WINDOW_SECONDS}s stability monitor..."
+_log "Normal boot confirmed. Starting ${STABILITY_WINDOW}s stability monitor..."
 
 (
-    sleep "$STABILITY_WINDOW_SECONDS"
+    sleep "$STABILITY_WINDOW"
     echo "$(date +%s)" > "$PHOENIXBOOT_DIR/last_good_boot"
     echo "0" > "$PHOENIXBOOT_DIR/rapid_boot_count"
     _reset_misc_counter

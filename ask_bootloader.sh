@@ -101,7 +101,7 @@ wait_for_result() {
             rm -f "$RESULT_FILE"
             return 0
         fi
-        usleep 200000 2>/dev/null || sleep 1
+        usleep 200000 2>/dev/null || sleep 0.2 2>/dev/null || sleep 1
     done
     echo "timeout"
     return 1
