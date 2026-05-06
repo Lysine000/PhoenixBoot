@@ -440,6 +440,14 @@ cp "$ORIG_IMG" "$PHOENIXBOOT_DATA_DIR/boot_orig.img"
 echo "$ORIG_SHA256" > "$PHOENIXBOOT_DATA_DIR/boot_orig.sha256"
 log_ok "Primary backup stored: $PHOENIXBOOT_DATA_DIR/boot_orig.img"
 
+if mount | grep -q ' /sdcard ' || [ -d /sdcard ]; then
+    mkdir -p /sdcard/PhoenixBoot_Backup 2>/dev/null
+    if cp "$ORIG_IMG" /sdcard/PhoenixBoot_Backup/boot_orig.img 2>/dev/null; then
+        echo "$ORIG_SHA256" > /sdcard/PhoenixBoot_Backup/boot_orig.sha256
+        log_ok "User export stored: /sdcard/PhoenixBoot_Backup/boot_orig.img"
+    fi
+fi
+
 SECONDARY_BACKUP_PATH=""
 SECONDARY_LOCATION="none"
 
