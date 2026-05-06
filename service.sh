@@ -212,11 +212,47 @@ fi
 _log "Normal boot confirmed. Starting ${STABILITY_WINDOW}s stability monitor..."
 
 (
-    sleep "$STABILITY_WINDOW"
-    echo "$(date +%s)" > "$PHOENIXBOOT_DIR/last_good_boot"
-    echo "0" > "$PHOENIXBOOT_DIR/rapid_boot_count"
-    _reset_misc_counter
-    _log "Stability window passed. Device marked stable. Panic counters reset."
+    _deadline=$(( $(date +%s) + STABILITY_WINDOW ))
+    _triggered=false
+    
+    _nodes=""
+    for _n in /dev/input/event*; do
+        [ -c "$_n" ] && _nodes="$_nodes $_n"
+    done
+    
+    if command -v getevent >/dev/null 2>&1 && [ -n "$_nodes" ]; then
+        for _n in $_nodes; do
+            # Wait for KEY_VOLUMEUP DOWN event
+            ( getevent -l "$_n" 2>/dev/null | grep -m 1 -q "KEY_VOLUMEUP.*DOWN" && echo "1" > "$PHOENIXBOOT_DIR/rescue_triggered" ) &
+            _jobs="$_jobs $!"
+        done
+        
+        while [ "$(date +%s)" -lt "$_deadline" ]; do
+            if [ -f "$PHOENIXBOOT_DIR/rescue_triggered" ]; then
+                _triggered=true
+                break
+            fi
+            sleep 2
+        done
+        
+        # Cleanup
+        for _j in $_jobs; do kill $_j 2>/dev/null || true; done
+        rm -f "$PHOENIXBOOT_DIR/rescue_triggered"
+    else
+        # Fallback if getevent unavailable
+        sleep "$STABILITY_WINDOW"
+    fi
+
+    if $_triggered; then
+        _log "MANUAL RESCUE TRIGGERED by user (Volume Up). Executing recovery."
+        BOOTLOOP_REASON="Manual Rescue Trigger"
+        _do_recovery
+    else
+        echo "$(date +%s)" > "$PHOENIXBOOT_DIR/last_good_boot"
+        echo "0" > "$PHOENIXBOOT_DIR/rapid_boot_count"
+        _reset_misc_counter
+        _log "Stability window passed. Device marked stable. Panic counters reset."
+    fi
 ) &
 
 _log "Stability monitor launched in background (PID=$!)."
