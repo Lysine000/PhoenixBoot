@@ -1,62 +1,53 @@
-# PhoenixBoot v1.3
+# Phoenix Boot 🛡️
+**Zero-compromise bootloop protection for rooted Android.**
 
-Universal bootloop protection for rooted Android. Patches your boot image with `panic=5`, monitors for crash cycles via a two-tier watchdog, and auto-restores a verified backup if things go sideways.
-
----
-
-## Compatibility & Warnings
-
-- **Requires Unlocked Bootloader:** If your bootloader is locked, do not flash this. The module will detect the lock and default to "Monitor-only" mode, but it's better to just not risk it.
-- **Samsung / Knox:** Samsung devices are tricky. Flashing any modified boot image **will** trip your Knox eFuse permanently. Also, some Samsung devices use non-standard `/misc` offsets. If you're on a Samsung, check your config after install and maybe set `USE_MISC_COUNTER=false` if you're worried about OEM data at `0xD000`.
-- **MediaTek (MTK):** Some MTK devices have weird partition paths. If the installer can't find your boot partition, it will abort. Check the logs.
+Phoenix Boot is a fail-safe watchdog for your Android device. It monitors the boot process and automatically restores your original boot image if it detects a crash cycle (bootloop). Unlike basic scripts, Phoenix Boot uses a two-tier verification system and can survive factory resets on supported hardware.
 
 ---
 
-## How It Works (The Technical Bit)
+## ✨ Key Features
 
-### 1. The Boot Patch (Early Panic)
-The installer uses `magiskboot` to inject `panic=5` into your kernel command line or `bootconfig` block (for GKI 2.0). This ensures the kernel reboots instead of hanging on a black screen when a panic occurs. 
+*   **Dual-Tier Watchdog:** 
+    *   **Tier 1 (Early-Panic):** Uses a tiny 16-byte block in the `/misc` partition to catch loops before `/data` is even mounted.
+    *   **Tier 2 (Stability Monitor):** Tracks rapid reboots within the first 90 seconds of the system starting up.
+*   **Universal Compatibility:** Supports standard AOSP layouts, A/B devices, and GKI 2.0 (via `bootconfig` block patching).
+*   **Factory-Reset Proof:** Automatically identifies and uses redundant backup locations in `/persist` or `/cache` to ensure your stock boot image survives a data wipe.
+*   **Safe by Design:** 
+    *   Strict SHA256 verification of all backups before flashing.
+    *   Manual Volume Key confirmation for bootloader status to prevent accidental bricks on locked devices.
 
-### 2. Tier-1 Watchdog: `/misc` Counter
-We use a small 16-byte block at offset `0xD000` in the `/misc` partition.
-- **Magic:** `PHNXBT` (0x50484e584254)
-- **Offset:** `0xD000` (Safe on AOSP/Pixel, use caution on Samsung/MTK).
-A service runs at `early-init` to increment this counter before `/data` is even mounted. If it hits 3, we declare a loop.
+## 🛠️ How it Works
 
-### 3. Tier-2 Watchdog: Rapid Reboot Tracking
-If the phone boots and crashes within 90 seconds, a counter in `/data/adb/phoenixboot/` is incremented. If this hits 5, we initiate recovery. 
+1.  **The Patch:** The installer uses `magiskboot` to inject `panic=5` into your kernel parameters. This ensures the device reboots instantly on a kernel panic rather than hanging on a black screen.
+2.  **The Counter:** Every time the device starts, a service increments a persistent counter.
+3.  **The Reset:** If the device remains stable for 5 minutes (the "Stability Window"), the watchdog marks the boot as successful and resets the counters.
+4.  **The Rescue:** If the counter hits the limit (3 early panics or 5 rapid reboots), Phoenix Boot verifies your stock backup and flashes it back to the boot partition.
 
-### 4. Verified Recovery
-If a loop is confirmed, the watchdog:
-1. Verifies the SHA256 of the backup at `/data/adb/phoenixboot/boot_orig.img`.
-2. Checks fallback locations in `/persist/` or `/cache/` if the primary is missing.
-3. Flashes the stock boot image and reboots you to recovery.
+## 📥 Installation
 
----
+1.  Flash the module zip in **Magisk**, **KernelSU**, or **APatch**.
+2.  **Follow the Prompts:** During installation, you will be asked to confirm your bootloader status using the **Volume Keys**.
+3.  The module will automatically handle the backup, patching, and verification.
 
-## Manual Recovery
+## 🆘 Emergency Manual Recovery
 
-If the auto-recovery fails, look for `RECOVERY_NEEDED.txt` in your PhoenixBoot data folder. You can always get back to stock by flashing the `boot_orig.img` we created during install:
+If auto-recovery isn't triggered or fails for any reason, your original boot image is always safe. You can find it at:
+- `/data/adb/phoenixboot/boot_orig.img`
+- `/(persist|cache)/phoenixboot/boot_orig.img` (if available)
 
+To restore manually via ADB or a custom recovery terminal:
 ```bash
-# Example for A/B devices via ADB shell in recovery:
-dd if=/data/adb/phoenixboot/boot_orig.img of=/dev/block/by-name/boot_a
+# Replace 'boot' with your specific partition name if different
+dd if=/data/adb/phoenixboot/boot_orig.img of=/dev/block/by-name/boot
 ```
 
----
+## 🏗️ Building from Source
 
-## Build from Source
-I've included a `build.sh` script to make it easy to package the module yourself.
+If you want to package the module yourself, use the included build script:
 ```bash
 chmod +x build.sh
 ./build.sh
 ```
 
 ---
-
-## Changelog
-- **v1.3:** Removed spoofable bootloader auto-detection; now uses a manual Volume Key prompt at install. Fixed KernelSU directory persistence issues. Added GKI 2.0 `bootconfig` patching support.
-- **v1.2:** Introduced the dual-backup system and `/misc` early-panic counter.
-
---
-*Lysine000*
+*Maintained with ❤️ by the PhoenixBoot Project*
