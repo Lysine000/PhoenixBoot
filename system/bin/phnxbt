@@ -1,0 +1,46 @@
+#!/system/bin/sh
+# PhoenixBoot Status CLI
+
+PHOENIXBOOT_DIR="/data/adb/phoenixboot"
+CONFIG="$PHOENIXBOOT_DIR/config"
+LOG="$PHOENIXBOOT_DIR/watchdog.log"
+
+if [ ! -d "$PHOENIXBOOT_DIR" ]; then
+    echo "PhoenixBoot is not installed or data directory is missing."
+    exit 1
+fi
+
+echo "======================================"
+echo "         PhoenixBoot Status           "
+echo "======================================"
+
+if [ -f "$CONFIG" ]; then
+    . "$CONFIG"
+    echo "Boot Partition: $BOOT_PARTITION"
+    echo "A/B Device:     $IS_AB"
+    echo "Install Date:   $INSTALL_DATE_HUMAN"
+    echo "Root Manager:   $ROOT_MANAGER"
+    
+    if [ "$USE_MISC_COUNTER" = "true" ]; then
+        echo "Tier-1 Misc:    Active ($MISC_PARTITION)"
+    else
+        echo "Tier-1 Misc:    Disabled (Data-only fallback)"
+    fi
+    
+    echo "Backup Primary: Valid"
+    if [ "$SECONDARY_LOCATION" != "none" ]; then
+        echo "Backup Sec:     /$SECONDARY_LOCATION"
+    fi
+else
+    echo "Status:         Unknown (Config missing)"
+fi
+
+echo "--------------------------------------"
+echo "        Recent Watchdog Logs          "
+echo "--------------------------------------"
+if [ -f "$LOG" ]; then
+    tail -n 10 "$LOG"
+else
+    echo "No logs found yet."
+fi
+echo "======================================"

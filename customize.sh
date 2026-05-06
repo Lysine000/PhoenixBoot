@@ -590,6 +590,7 @@ chmod 755 "$MODPATH/service.sh"
 chmod 755 "$MODPATH/uninstall.sh"
 chmod 755 "$MODPATH/ask_bootloader.sh"
 chmod 755 "$MODPATH/system/bin/phoenixboot/boot_abort_handler.sh"
+chmod 755 "$MODPATH/system/bin/phnxbt"
 log_ok "Module file permissions set."
 
 log_info "Cleaning up installation workspace..."
