@@ -5,3 +5,4 @@ versionCode=14
 author=PhoenixBoot Project
 description=Zero-compromise bootloop protection. Safe on locked/AVB devices. Survives factory reset. Persistent panic counter via /misc. Never bricks. Never deletes your backup.
 minMagisk=26000
+updateJson=https://raw.githubusercontent.com/Lysine000/PhoenixBoot/main/update.json
