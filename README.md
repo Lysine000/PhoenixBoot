@@ -50,4 +50,4 @@ chmod +x build.sh
 ```
 
 ---
-*Maintained with ❤️ by the PhoenixBoot Project*
+*Maintained with ❤️ by lysine*
