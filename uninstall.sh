@@ -53,6 +53,7 @@ if [ $? -eq 0 ]; then
         _log "/misc panic counter cleared."
     fi
     _log "Uninstall complete. Reboot to apply."
+    rm -f "/data/local/tmp/phoenix_taps.txt"
 else
     _log "ERROR: Flash failed. Boot partition may be in an undefined state."
     _log "Please manually flash boot_orig.img from $PHOENIXBOOT_DIR"

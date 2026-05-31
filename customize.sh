@@ -1,6 +1,6 @@
 #!/sbin/sh
 # PhoenixBoot v1.3 - Installer
-# Author: Lysine000
+# Author: lysine000
 #
 # Universal bootloop protection for Android.
 # This script handles the installation, patching, and backup of the boot image.

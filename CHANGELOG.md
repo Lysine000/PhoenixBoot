@@ -1,5 +1,10 @@
 # Phoenix Boot Changelog
 
+## v1.5
+- **Hardware Panic Button:** Tap Volume Down 5 times during boot to force an immediate partition restore.
+- **Panic Persistence:** Trigger count survives hard kernel panics (stored in `/data/local/tmp/`).
+- **Auto-Kill Switch:** Panic listener automatically stops once boot is completed to prevent accidental triggers.
+
 ## v1.4
 - **Manual Rescue Trigger:** Hold Volume Up during the stability window to force a recovery.
 - **Improved Watchdog:** Fixed a critical bug where the stability timer was not waiting for the full window.

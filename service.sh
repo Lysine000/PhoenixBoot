@@ -208,7 +208,30 @@ if $BOOTLOOP_DETECTED; then
     exit 0
 fi
 
-# ── Step 8: Normal boot — background stability timer ─────────────────────────
+# ── Step 8: Hardware Panic Button (Vol Down x5) ───────────────────────────────
+if command -v getevent >/dev/null 2>&1; then
+    (
+        TAPS=0
+        getevent -l | while IFS= read -r line; do
+            case "$line" in
+                *KEY_VOLUMEDOWN*DOWN*)
+                    TAPS=$((TAPS + 1))
+                    if [ "$TAPS" -ge 5 ]; then
+                        _do_recovery
+                        break
+                    fi
+                    ;;
+            esac
+        done &
+        LPID=$!
+
+        while [ "$(getprop sys.boot_completed)" != "1" ]; do sleep 0.2; done
+        kill $LPID 2>/dev/null
+    ) &
+    _log "Panic button listener started (Vol Down x5)."
+fi
+
+# ── Step 9: Normal boot — background stability timer ─────────────────────────
 _log "Normal boot confirmed. Starting ${STABILITY_WINDOW}s stability monitor..."
 
 (
